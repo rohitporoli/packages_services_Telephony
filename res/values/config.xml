@@ -217,4 +217,7 @@
 
     <!-- Disable Operator Selection Menu for some CDMA carriers -->
     <bool name="config_disable_operator_selection_menu">false</bool>
+
+    <!-- whether to show uplmn preference for usim -->
+    <bool name="config_uplmn_for_usim">false</bool>
 </resources>
