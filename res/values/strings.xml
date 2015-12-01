@@ -1502,4 +1502,7 @@
     <string name="CFDeactivate">Deactivate</string>
     <string name="null_phone_number">Phone number cannot be null !</string>
     <string name="labelCFDeactAll">Deactivate All</string>
+
+    <string name="srvcc_video_message">"Video call has been downgraded to 2G/3G voice call, because the 4G network is not available."</string>
+    <string name="srvcc_message">"4G voice call has been downgraded to 2G/3G voice call, because the 4G network is not available."</string>
 </resources>
