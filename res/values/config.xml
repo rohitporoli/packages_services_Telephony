@@ -202,7 +202,7 @@
     <bool name="config_ef_plmn_sel">false</bool>
 
     <!-- Config to enable/disable showing depersonalizationpanel dialog -->
-	<bool name="icc_depersonalizationPanelEnabled">true</bool>
+    <bool name="icc_depersonalizationPanelEnabled">true</bool>
 
     <bool name="config_regional_ussd_hide_error_from_network_enable">false</bool>
 
@@ -214,4 +214,7 @@
 
     <!-- To  show VMNotification always until user reads it-->
     <bool name="config_show_vm_notification_always" translatable="false">false</bool>
+
+    <!-- Disable Operator Selection Menu for some CDMA carriers -->
+    <bool name="config_disable_operator_selection_menu">false</bool>
 </resources>
