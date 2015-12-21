@@ -138,6 +138,11 @@
     <bool name="config_prefer_2g" translatable="false">true</bool>
     <!-- Show enabled lte option for lte device -->
     <bool name="config_enabled_lte" translatable="false">false</bool>
+    <!-- Show enabled tdscdma option for device -->
+    <bool name="config_support_tdscdma" translatable="false">false</bool>
+    <!-- Show enabled tdscdma option for device when connect roaming network -->
+    <string-array name="config_support_tdscdma_roaming_on_networks" translatable="false">
+    </string-array>
     <!-- Show cdma auto network mode in (glabal) roaming -->
     <!-- DEPRECATED: Use CarrierConfigManager#KEY_SHOW_CDMA_CHOICES_BOOL -->
     <bool name="config_show_cdma" translatable="false">false</bool>
@@ -195,6 +200,12 @@
 
     <!-- Config to enabled reading and displaying of EF_PLMN_SEL SIM file -->
     <bool name="config_ef_plmn_sel">false</bool>
+
     <!-- Config to enable/disable showing depersonalizationpanel dialog -->
-    <bool name="icc_depersonalizationPanelEnabled">true</bool>
+	<bool name="icc_depersonalizationPanelEnabled">true</bool>
+
+    <bool name="config_regional_ussd_hide_error_from_network_enable">false</bool>
+
+    <!-- Whether to set voicemail address editable-->
+    <bool name="config_regional_voicemail_address_editable">false</bool>
 </resources>
