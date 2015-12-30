@@ -31,12 +31,14 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import com.android.internal.telephony.Call;
+import com.android.internal.telephony.CallStateException;
 import com.android.internal.telephony.Connection;
 import com.android.internal.telephony.Phone;
 import com.android.internal.telephony.PhoneConstants;
 import com.android.internal.telephony.PhoneProxy;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.cdma.CdmaCallWaitingNotification;
+import com.android.phone.common.util.FirewallUtils;
 import com.android.phone.PhoneUtils;
 
 import com.google.common.base.Preconditions;
@@ -174,6 +176,10 @@ final class PstnIncomingCallNotifier {
 
             // Final verification of the ringing state before sending the intent to Telecom.
             if (call != null && call.getState().isRinging()) {
+                if (tryBlockingIncommingCall(connection, call)) {
+                    Log.i(this, "call was blocked by firewall");
+                    return;
+                }
                 sendIncomingCallIntent(connection);
             }
         }
@@ -186,12 +192,39 @@ final class PstnIncomingCallNotifier {
         if (call.getState() == Call.State.WAITING) {
             Connection connection = call.getLatestConnection();
             if (connection != null) {
+                if (tryBlockingIncommingCall(connection, call)) {
+                    Log.i(this, "call was blocked by firewall");
+                    return;
+                }
+
                 String number = connection.getAddress();
                 if (number != null && Objects.equals(number, ccwi.number)) {
                     sendIncomingCallIntent(connection);
                 }
             }
         }
+    }
+
+    private boolean tryBlockingIncommingCall(Connection connection, Call call) {
+        if (connection != null) {
+            final String number = connection.getAddress();
+            final Phone phone = call.getPhone();
+            final Context context = mPhoneProxy.getContext();
+            if (phone != null
+                    && FirewallUtils.isBlockedByFirewall(context,
+                    number, phone.getPhoneId())) {
+                // Directly hangup if blocked
+                try {
+                    connection.hangup();
+                    FirewallUtils.sendBlockRecordBroadcast(context, phone.getPhoneId(), number);
+                } catch (CallStateException ex) {
+                    Log.w(this, "Connection hangup: caught " + ex, ex);
+                    return false;
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     private void handleNewUnknownConnection(AsyncResult asyncResult) {
