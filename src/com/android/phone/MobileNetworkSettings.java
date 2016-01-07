@@ -740,6 +740,7 @@ public class MobileNetworkSettings extends PreferenceActivity
                     getPreferredNetworkModeForPhoneId() == Phone.NT_MODE_GSM_ONLY ||
                     getPreferredNetworkModeForPhoneId() == Phone.NT_MODE_GLOBAL) {
                 prefSet.removePreference(mButtonPreferredNetworkMode);
+                prefSet.removePreference(mButtonEnabledNetworks);
             }
         }
 
