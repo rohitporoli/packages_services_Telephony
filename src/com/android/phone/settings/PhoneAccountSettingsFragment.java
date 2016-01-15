@@ -160,16 +160,19 @@ public class PhoneAccountSettingsFragment extends PreferenceFragment
             getPreferenceScreen().removePreference(mAccountList);
         }
 
-        if (TelephonyManager.getDefault().getMultiSimConfiguration() !=
-                 TelephonyManager.MultiSimVariants.DSDS) {
+        if ((TelephonyManager.getDefault().getMultiSimConfiguration() !=
+                 TelephonyManager.MultiSimVariants.DSDS) ||
+                (!getResources().getBoolean(R.bool.config_xdivert_enable))) {
             Preference mXDivertPref = getPreferenceScreen().findPreference(BUTTON_XDIVERT_KEY);
             if (mXDivertPref != null) {
                 Log.d(LOG_TAG, "Remove xdivert preference: ");
-                getPreferenceScreen().removePreference(mXDivertPref);
+                PreferenceCategory prefs = (PreferenceCategory) getPreferenceScreen().findPreference(ACCOUNTS_LIST_CATEGORY_KEY);
+                prefs.removePreference(mXDivertPref);
             }
         }
 
-        if (SipUtil.isVoipSupported(getActivity())) {
+        if (SipUtil.isVoipSupported(getActivity()) &&
+                getResources().getBoolean(R.bool.sip_settings_on)) {
             mSipSharedPreferences = new SipSharedPreferences(getActivity());
 
             mUseSipCalling = (ListPreference)
