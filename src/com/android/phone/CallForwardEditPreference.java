@@ -209,7 +209,8 @@ public class CallForwardEditPreference extends EditPhoneNumberPreference {
                 // the interface of Phone.setCallForwardingOption has error:
                 // should be action, reason...
                 if (reason == CommandsInterface.CF_REASON_UNCONDITIONAL
-                        && !isAllDayChecked() && isTimerEnabled) {
+                        && !isAllDayChecked() && isTimerEnabled
+                        && (action != CommandsInterface.CF_ACTION_DISABLE)) {
 
                     if (true) Log.d(LOG_TAG, "setCallForwardingUncondTimerOption,"
                                                 +"starthour = " + editStartHour
