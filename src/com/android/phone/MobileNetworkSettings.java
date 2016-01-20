@@ -776,7 +776,8 @@ public class MobileNetworkSettings extends PreferenceActivity
             // in case it is currently something else. That is possible if user
             // changed the setting while roaming and is now back to home network.
             settingsNetworkMode = preferredNetworkMode;
-        } else if (carrierConfig.getBoolean(CarrierConfigManager.KEY_WORLD_PHONE_BOOL) == true) {
+        } else if (carrierConfig.getBoolean(CarrierConfigManager.KEY_WORLD_PHONE_BOOL) == true &&
+                isWorldMode()) {
             prefSet.removePreference(mButtonEnabledNetworks);
             // set the listener for the mButtonPreferredNetworkMode list preference so we can issue
             // change Preferred Network Mode.
@@ -834,7 +835,7 @@ public class MobileNetworkSettings extends PreferenceActivity
                     mGsmUmtsOptions = null;
                 }
             } else if (phoneType == PhoneConstants.PHONE_TYPE_GSM) {
-                if (isSupportTdscdma()) {
+                if (isSupportTdscdma() || !isWorldMode()) {
                     mButtonEnabledNetworks.setEntries(
                             R.array.enabled_networks_tdscdma_choices);
                     mButtonEnabledNetworks.setEntryValues(
@@ -1436,7 +1437,7 @@ public class MobileNetworkSettings extends PreferenceActivity
             case Phone.NT_MODE_TD_SCDMA_WCDMA_LTE:
             case Phone.NT_MODE_TD_SCDMA_LTE_CDMA_EVDO_GSM_WCDMA:
             case Phone.NT_MODE_LTE_CDMA_EVDO_GSM_WCDMA:
-                if (isSupportTdscdma()) {
+                if (isSupportTdscdma() || !isWorldMode()) {
                     mButtonEnabledNetworks.setValue(
                             Integer.toString(Phone.NT_MODE_TD_SCDMA_LTE_CDMA_EVDO_GSM_WCDMA));
                     mButtonEnabledNetworks.setSummary(R.string.network_lte);
