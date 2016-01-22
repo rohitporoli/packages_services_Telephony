@@ -119,8 +119,9 @@ public class CallForwardEditPreference extends EditPhoneNumberPreference {
 
     private boolean isTimerEnabled() {
         //Timer is enabled only when UT services are enabled
-        return getContext().getResources().getBoolean(
-                R.bool.config_enable_cfu_time) && mPhone.isUtEnabled();
+        return (SystemProperties.getBoolean("persist.radio.ims.cmcc", false)
+                || getContext().getResources().getBoolean(R.bool.config_enable_cfu_time))
+                && mPhone.isUtEnabled();
     }
 
     /*This will be invoked once service is bound to client*/
