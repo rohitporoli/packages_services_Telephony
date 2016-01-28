@@ -189,7 +189,8 @@ public class MobileNetworkSettings extends PreferenceActivity
     private void setScreenState() {
         if (mPhone != null) {
             int simState = TelephonyManager.getDefault().getSimState(mPhone.getPhoneId());
-            getPreferenceScreen().setEnabled(simState != TelephonyManager.SIM_STATE_ABSENT);
+            getPreferenceScreen().setEnabled(simState != TelephonyManager.SIM_STATE_ABSENT &&
+                    simState != TelephonyManager.SIM_STATE_NOT_READY);
         }
     }
 
