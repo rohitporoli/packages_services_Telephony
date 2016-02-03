@@ -107,6 +107,10 @@ public class MobileNetworkSettings extends PreferenceActivity
     private static final String PROPERTY_CT_CLASS_C = "persist.radio.ct_class_c";
     private static final String PRIMARY_4G_CARD_PROPERTY_NAME = "persist.radio.detect4gcard";
     private static final String CONFIG_CURRENT_PRIMARY_SUB = "config_current_primary_sub";
+    private static final String CARRIER_MODE_CT_CLASS_A = "ct_class_a";
+
+    private String mCarrierMode = SystemProperties.get("persist.carrier.mode", "default");
+    private boolean mIsCTClassA = mCarrierMode.equals(CARRIER_MODE_CT_CLASS_A);
 
     private int preferredNetworkMode = Phone.PREFERRED_NT_MODE;
 
@@ -839,11 +843,16 @@ public class MobileNetworkSettings extends PreferenceActivity
                     mGsmUmtsOptions = null;
                 }
             } else if (phoneType == PhoneConstants.PHONE_TYPE_GSM) {
-                if (isSupportTdscdma() || !getResources().getBoolean(R.bool.world_phone)) {
+                if (isSupportTdscdma()) {
                     mButtonEnabledNetworks.setEntries(
                             R.array.enabled_networks_tdscdma_choices);
                     mButtonEnabledNetworks.setEntryValues(
                             R.array.enabled_networks_tdscdma_values);
+                } else if (mIsCTClassA) {
+                    mButtonEnabledNetworks.setEntries(
+                            R.array.enabled_networks_gsm_only_choices);
+                    mButtonEnabledNetworks.setEntryValues(
+                            R.array.enabled_networks_gsm_only_values);
                 } else if (!carrierConfig.getBoolean(CarrierConfigManager.KEY_PREFER_2G_BOOL)
                         && !getResources().getBoolean(R.bool.config_enabled_lte)) {
                     mButtonEnabledNetworks.setEntries(
@@ -862,7 +871,7 @@ public class MobileNetworkSettings extends PreferenceActivity
                             R.array.enabled_networks_except_lte_choices);
                     mButtonEnabledNetworks.setEntryValues(
                             R.array.enabled_networks_except_lte_values);
-                } else if (mIsGlobalCdma) {
+                } else if (mIsGlobalCdma && getResources().getBoolean(R.bool.world_phone)) {
                     mButtonEnabledNetworks.setEntries(
                             R.array.enabled_networks_cdma_choices);
                     mButtonEnabledNetworks.setEntryValues(
@@ -1373,7 +1382,7 @@ public class MobileNetworkSettings extends PreferenceActivity
             case Phone.NT_MODE_WCDMA_ONLY:
             case Phone.NT_MODE_GSM_UMTS:
             case Phone.NT_MODE_WCDMA_PREF:
-                if (!mIsGlobalCdma) {
+                if (!mIsGlobalCdma || !getResources().getBoolean(R.bool.world_phone)) {
                     mButtonEnabledNetworks.setValue(
                             Integer.toString(Phone.NT_MODE_WCDMA_PREF));
                     mButtonEnabledNetworks.setSummary(R.string.network_3G);
@@ -1384,7 +1393,7 @@ public class MobileNetworkSettings extends PreferenceActivity
                 }
                 break;
             case Phone.NT_MODE_GSM_ONLY:
-                if (!mIsGlobalCdma) {
+                if (!mIsGlobalCdma || !getResources().getBoolean(R.bool.world_phone)) {
                     mButtonEnabledNetworks.setValue(
                             Integer.toString(Phone.NT_MODE_GSM_ONLY));
                     mButtonEnabledNetworks.setSummary(R.string.network_2G);
@@ -1404,7 +1413,7 @@ public class MobileNetworkSettings extends PreferenceActivity
                 }
             case Phone.NT_MODE_LTE_ONLY:
             case Phone.NT_MODE_LTE_WCDMA:
-                if (!mIsGlobalCdma) {
+                if (!mIsGlobalCdma || !getResources().getBoolean(R.bool.world_phone)) {
                     mButtonEnabledNetworks.setValue(
                             Integer.toString(Phone.NT_MODE_LTE_GSM_WCDMA));
                     mButtonEnabledNetworks.setSummary((mShow4GForLTE == true)
@@ -1455,7 +1464,7 @@ public class MobileNetworkSettings extends PreferenceActivity
             case Phone.NT_MODE_TD_SCDMA_WCDMA_LTE:
             case Phone.NT_MODE_TD_SCDMA_LTE_CDMA_EVDO_GSM_WCDMA:
             case Phone.NT_MODE_LTE_CDMA_EVDO_GSM_WCDMA:
-                if (isSupportTdscdma() || !getResources().getBoolean(R.bool.world_phone)) {
+                if (isSupportTdscdma()) {
                     mButtonEnabledNetworks.setValue(
                             Integer.toString(Phone.NT_MODE_TD_SCDMA_LTE_CDMA_EVDO_GSM_WCDMA));
                     mButtonEnabledNetworks.setSummary(R.string.network_lte);
