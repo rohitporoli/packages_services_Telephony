@@ -105,6 +105,8 @@ public class MobileNetworkSettings extends PreferenceActivity
     private static final String BUTTON_CDMA_SYSTEM_SELECT_KEY = "cdma_system_select_key";
     private static final String PRIMARY_CARD_PROPERTY_NAME = "persist.radio.primarycard";
     private static final String PROPERTY_CT_CLASS_C = "persist.radio.ct_class_c";
+    private static final String PRIMARY_4G_CARD_PROPERTY_NAME = "persist.radio.detect4gcard";
+    private static final String CONFIG_CURRENT_PRIMARY_SUB = "config_current_primary_sub";
 
     private int preferredNetworkMode = Phone.PREFERRED_NT_MODE;
 
@@ -189,7 +191,8 @@ public class MobileNetworkSettings extends PreferenceActivity
     private void setScreenState() {
         if (mPhone != null) {
             int simState = TelephonyManager.getDefault().getSimState(mPhone.getPhoneId());
-            getPreferenceScreen().setEnabled(simState != TelephonyManager.SIM_STATE_ABSENT);
+            getPreferenceScreen().setEnabled(simState != TelephonyManager.SIM_STATE_ABSENT &&
+                    simState != TelephonyManager.SIM_STATE_NOT_READY);
         }
     }
 
@@ -732,7 +735,8 @@ public class MobileNetworkSettings extends PreferenceActivity
           * 2. Non-USIM card is inserted.
           * 3. Network type is GSM only or Global
           */
-        if (SystemProperties.getBoolean(PRIMARY_CARD_PROPERTY_NAME, false)) {
+        if (SystemProperties.getBoolean(PRIMARY_CARD_PROPERTY_NAME, false) &&
+                !SystemProperties.getBoolean(PRIMARY_4G_CARD_PROPERTY_NAME, false)) {
             int phoneId = mPhone.getPhoneId();
             if (UiccController.getInstance().getUiccCard(phoneId) == null ||
                     !UiccController.getInstance().getUiccCard(phoneId)
@@ -971,6 +975,20 @@ public class MobileNetworkSettings extends PreferenceActivity
         ps = findPreference(BUTTON_CDMA_SYSTEM_SELECT_KEY);
         if (ps != null) {
             ps.setEnabled(hasActiveSubscriptions);
+        }
+
+        // Disable nwMode option in UI if current SIM is non-primary card with GSM only.
+        if (SystemProperties.getBoolean(PRIMARY_4G_CARD_PROPERTY_NAME, false)) {
+            int phoneId = mPhone.getPhoneId();
+            int currentPrimarySlot = Settings.Global.getInt(context.getContentResolver(),
+                     CONFIG_CURRENT_PRIMARY_SUB, SubscriptionManager.INVALID_SIM_SLOT_INDEX);
+
+            if ((SubscriptionManager.isValidSlotId(currentPrimarySlot)
+                    && (phoneId != currentPrimarySlot)) &&
+                    (getPreferredNetworkModeForPhoneId() == Phone.NT_MODE_GSM_ONLY)) {
+                mButtonPreferredNetworkMode.setEnabled(false);
+                mButtonEnabledNetworks.setEnabled(false);
+            }
         }
     }
 
